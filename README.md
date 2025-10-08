@@ -201,7 +201,8 @@ To get ready for our mapping step, we need to prepare our freshly sequenced read
 1. Split your reads into smaller chunks using `split`. You can adjust the `-p` parameter to change the number of chunks. Here, we are splitting our reads into 10 chunks.
 
     ```
-    split -l 4000 /staging/<NetID>/genomics_tutorial/inputs/cali_condor_wgs_reads.fastq /home/<NetID>/genomics_tutorial/inputs/ subset_
+    cd ~/genomics_tutorial/inputs/
+    split -l 4000 <condor_wgs_reads>.fastq subset_
     ```
     
     This command splits the `cali_condor_wgs_reads.fastq` file into smaller files, each containing 4000 lines (which corresponds to 1000 reads, since each read in a FASTQ file is represented by 4 lines). It prepends the prefix `subset_` to each split output file, this will help us in the next step when listing our input files for HTCondor. The output files will be named `subset_aa_cali_condor_wgs_reads.fastq`, `subset_ab_cali_condor_wgs_reads.fastq`, `subset_ac_cali_condor_wgs_reads.fastq`, etc. 
@@ -212,7 +213,8 @@ To get ready for our mapping step, we need to prepare our freshly sequenced read
 2. Generate a list of the split fastq files. Save it as `listofReads.txt` in your project base directory in your `/home/<NetID>` path. 
 
     ```
-   ls ~/genomics_tutorial/inputs/subset_* > ~/genomics_tutorial/listofReads.txt
+   cd ~/genomics_tutorial/inputs/
+   ls subset_* > ~/genomics_tutorial/listofReads.txt
    ```
    
 > [!TIP]
