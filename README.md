@@ -91,7 +91,7 @@ To obtain a copy of the files used in this tutorial, you can
 
 <!--TODO: Add to pelican readable origin-->
 
-## Setting up our software environment
+## Setting up our software environment - Optional
 Before we can begin mapping our reads, we need to setup our software environment to run Dorado. We are going to setup our environment using an Apptainer container. 
 
 1. First, let's login to our CHTC Account
@@ -255,25 +255,25 @@ Now that we have our reference genome indexed and our reads split into smaller c
 
 2. Create `minimap2_mapping.sub` using either `vim` or `nano`. Replace `<ref_genome_mmi_file_name>` with the name of your reference genome index file (e.g., `G_californianus_813.fasta.mmi`) in the `arguments` and `transfer_input_files` lines. Replace `<NetID>` with **your** actual NetID.
     ```
-    container_image        = "osdf:///chtc/staging/<NetID>/genomics_tutorial/software/minimap2_08OCT2025_v1.sif"
+    container_image        = osdf:///chtc/staging/<NetID>/genomics_tutorial/software/minimap2_08OCT2025_v1.sif
     
     executable		       = ./executables/minimap2_mapping.sh
-    arguments              = <ref_genome_mmi_file_name> $(BAM_File)
+    arguments              = <ref_genome_mmi_file_name> $(READ_SUBSET)
    
-    transfer_input_files   = osdf:///chtc/staging/<NetID>/genomics_tutorial/inputs/<ref_genome_mmi_file_name>, osdf:///chtc/home/<NetID>/genomics_tutorial/inputs/$(BAM_FILE)
+    transfer_input_files   = osdf:///chtc/staging/<NetID>/genomics_tutorial/inputs/<ref_genome_mmi_file_name>, inputs/$(READ_SUBSET)
     
-    transfer_output_files  = mapped_$(BAM_FILE)_reads_to_genome_sam_sorted.bam
-    transfer_output_remaps = "mapped_$(BAM_FILE)_reads_to_genome_sam_sorted.bam = /outputs/mapped_$(BAM_FILE)_reads_to_genome_sam_sorted.bam"
+    transfer_output_files  = mapped_$(READ_SUBSET)_reads_to_genome_sam_sorted.bam
+    transfer_output_remaps = "mapped_$(READ_SUBSET)_reads_to_genome_sam_sorted.bam = outputs/mapped_$(READ_SUBSET)_reads_to_genome_sam_sorted.bam"
     
-    output                 = ./minimap2/logs/$(Cluster)_$(Process)_mapping_$(BAM_FILE)_step2.out
-    error                  = ./minimap2/logs/$(Cluster)_$(Process)_mapping_$(BAM_FILE)_step2.err
-    log                    = ./minimap2/logs/$(Cluster)_mapping_step2.log
+    output                 = ./logs/$(Cluster)_$(Process)_mapping_$(READ_SUBSET)_step2.out
+    error                  = ./logs/$(Cluster)_$(Process)_mapping_$(READ_SUBSET)_step2.err
+    log                    = ./logs/$(Cluster)_mapping_step2.log
     
     request_cpus           = 2
     request_disk           = 5 GB
     request_memory         = 10 GB
     
-    queue BAM_File from listofReads.txt
+    queue READ_SUBSET from listofReads.txt
     ```
     
      In this step, we **are not** transferring our outputs to the `/staging` directory. The mapped/sorted BAM files are intermediate temporary files in our analysis and do not benefit from the aggressive caching of the OSDF. By default, HTCondor will transfer outputs to the directory where we submitted our job from. Since we want to transfer the sorted mapped BAMs to a specific directory, we can use the `transfer_output_remaps` attribute on our submission script. The syntax of this attribute is:

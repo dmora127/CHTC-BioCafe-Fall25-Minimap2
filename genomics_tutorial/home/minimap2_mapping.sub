@@ -1,19 +1,19 @@
-container_image        = "osdf:///chtc/staging/<NetID>/genomics_tutorial/software/minimap2_08OCT2025_v1.sif"
+container_image        = osdf:///chtc/staging/<NetID>/genomics_tutorial/software/minimap2_08OCT2025_v1.sif
 
-executable		       = ./executables/minimap2_mapping.sh
-arguments              = <ref_genome_mmi_file_name> $(BAM_File)
+executable             = ./executables/minimap2_mapping.sh
+arguments              = <ref_genome_mmi_file_name> $(READ_SUBSET)
 
-transfer_input_files   = osdf:///chtc/staging/<NetID>/genomics_tutorial/inputs/<ref_genome_mmi_file_name>, osdf:///chtc/home/<NetID>/genomics_tutorial/inputs/$(BAM_FILE)
+transfer_input_files   = "osdf:///chtc/staging/<NetID>/genomics_tutorial/inputs/<ref_genome_mmi_file_name>", inputs/$(READ_SUBSET)
 
-transfer_output_files  = mapped_$(BAM_FILE)_reads_to_genome_sam_sorted.bam
-transfer_output_remaps = "mapped_$(BAM_FILE)_reads_to_genome_sam_sorted.bam = /outputs/mapped_$(BAM_FILE)_reads_to_genome_sam_sorted.bam"
+transfer_output_files  = mapped_$(READ_SUBSET)_reads_to_genome_sam_sorted.bam
+transfer_output_remaps = "mapped_$(READ_SUBSET)_reads_to_genome_sam_sorted.bam = outputs/mapped_$(READ_SUBSET)_reads_to_genome_sam_sorted.bam"
 
-output                 = ./minimap2/logs/$(Cluster)_$(Process)_mapping_$(BAM_FILE)_step2.out
-error                  = ./minimap2/logs/$(Cluster)_$(Process)_mapping_$(BAM_FILE)_step2.err
-log                    = ./minimap2/logs/$(Cluster)_mapping_step2.log
+output                 = ./logs/$(Cluster)_$(Process)_mapping_$(READ_SUBSET)_step2.out
+error                  = ./logs/$(Cluster)_$(Process)_mapping_$(READ_SUBSET)_step2.err
+log                    = ./logs/$(Cluster)_mapping_step2.log
 
 request_cpus           = 2
 request_disk           = 5 GB
 request_memory         = 10 GB
 
-queue BAM_File from listofReads.txt
+queue READ_SUBSET from listofReads.txt
