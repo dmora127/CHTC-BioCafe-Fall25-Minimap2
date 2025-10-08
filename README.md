@@ -1,10 +1,8 @@
-# Long-Read Genomics on the OSPool
+# Mapping Reads on CHTC with Minimap2
 
-This tutorial will walk you through a complete long-read sequencing analysis workflow using Oxford Nanopore data on the OSPool high-throughput computing ecosystem. You'll learn how to:
+This tutorial will walk you through a complete long-read sequencing read mapping exercise using [Minimap2](). You'll learn how to:
 
-* Basecall raw Nanopore reads using the latest GPU-accelerated Dorado basecaller
 * Map your reads to a reference genome using Minimap2
-* Call structural variants using Sniffles2
 * Breakdown massive bioinformatics workflows into many independent smaller tasks
 * Submit hundreds to thousands of jobs with a few simple commands
 * Use the Open Science Data Federation (OSDF) to manage file transfer during job submission
@@ -12,34 +10,21 @@ This tutorial will walk you through a complete long-read sequencing analysis wor
 All of these steps are distributed across hundreds (or thousands!) of jobs using the HTCondor workload manager and Apptainer containers to run your software reliably and reproducibly at scale. The tutorial is built around realistic genomics use cases and emphasizes performance, reproducibility, and portability. You'll work with real data and see how high-throughput computing (HTC) can accelerate your genomics workflows.
 
 >[!NOTE]
->If you're brand new to running jobs on the OSPool, we recommend completing the HTCondor ["Hello World"](https://portal.osg-htc.org/documentation/htc_workloads/workload_planning/htcondor_job_submission/) exercise before diving into this tutorial.
+>If you're brand new to running jobs on CHTC, we recommend completing the HTCondor ["Hello World"](https://chtc.cs.wisc.edu/uw-research-computing/htcondor-job-submission) exercise before diving into this tutorial.
 
 **Let’s get started!**
 
 Jump to...
 <!-- TOC start (generated with https://github.com/derlin/bitdowntoc) -->
-
-- [Long-Read Genomics on the OSPool](#long-read-genomics-on-the-ospool)
-   * [Tutorial Setup](#tutorial-setup)
-      + [Assumptions](#assumptions)
-      + [Materials](#materials)
-   * [Basecalling Oxford Nanopore long reads using Dorado](#basecalling-oxford-nanopore-long-reads-using-dorado)
-      + [Setting up our software environment](#setting-up-our-software-environment)
-      + [Data Wrangling and Splitting Reads](#data-wrangling-and-splitting-reads)
-         - [For _Simplex_ basecalling](#for-simplex-basecalling)
-         - [For _Duplex_ basecalling](#for-duplex-basecalling)
-      + [Submitting your basecalling jobs](#submitting-your-basecalling-jobs)
-   * [Mapping Sequencing Reads to Genome](#mapping-sequencing-reads-to-genome)
-      + [Data Wrangling and Splitting Reads](#data-wrangling-and-splitting-reads-1)
-      + [Running Minimap to Map Reads to the Reference Genome](#running-minimap-to-map-reads-to-the-reference-genome)
-  * [Structural Variant Calling using Sniffles2](#structural-variant-calling-using-sniffles2)
-      + [Data Wrangling and Splitting Reads](#Data-Wrangling-and-Splitting-Reads-2)
-      + [Submitting our Sniffles2 SV jobs to the OSPool](#submitting-our-sniffles2-sv-jobs-to-the-ospool)
-   * [Next Steps](#next-steps)
-      + [Software](#software)
-      + [Data](#data)
-      + [GPUs](#gpus)
-   * [Getting Help](#getting-help)
+- [Tutorial Setup](#tutorial-setup)
+   * [Assumptions](#assumptions)
+   * [Materials](#materials)
+- [Setting up our software environment - Optional](#setting-up-our-software-environment---optional)
+- [Mapping Whole Genome Sequencing Reads to a Reference Genome](#mapping-whole-genome-sequencing-reads-to-a-reference-genome)
+   * [Indexing the Reference Genome - Generating `G_californianus_813.fasta.mmi`](#indexing-the-reference-genome---generating-g_californianus_813fastammi)
+   * [Splitting Our Sequencing Reads](#splitting-our-sequencing-reads)
+   * [Running Minimap to Map Reads to the Reference Genome](#running-minimap-to-map-reads-to-the-reference-genome)
+- [Next Steps](#next-steps)
 
 <!-- TOC end -->
 
@@ -50,11 +35,9 @@ Jump to...
 This tutorial assumes that you:
 
 * Have basic command-line experience (e.g., navigating directories, using bash, editing text files).
-* Have a working OSPool account and can log into an Access Point (e.g., ap40.uw.osg-htc.org).
+* Have a working CHTC account and can log into an Access Point (e.g., ap2002.chtc.wisc.edu).
 * Are familiar with HTCondor job submission, including writing simple .sub files and tracking job status with condor_q.
 * Understand the general workflow of long-read sequencing analysis: basecalling → mapping → variant calling.
-* Have access to a machine with a GPU-enabled execution environment (provided automatically via the OSPool).
-* Have sufficient disk quota and file permissions in your OSPool home and OSDF directories.
 
 >[!TIP]
 >You do not need to be a genomics expert to follow this tutorial. The commands and scripts are designed to be beginner-friendly and self-contained, while still reflecting real-world research workflows.
@@ -92,7 +75,7 @@ To obtain a copy of the files used in this tutorial, you can
 <!--TODO: Add to pelican readable origin-->
 
 ## Setting up our software environment - Optional
-Before we can begin mapping our reads, we need to setup our software environment to run Dorado. We are going to setup our environment using an Apptainer container. 
+Before we can begin mapping our reads, we need to setup our software environment to run Minimap2. We are going to setup our environment using an Apptainer container. 
 
 1. First, let's login to our CHTC Account
 
@@ -203,7 +186,7 @@ Before we can map our reads to the reference genome, we need to index the refere
 > [!IMPORTANT]
 > Replace `<input_ref_genome_fasta_file_name>` with the actual name of your reference genome FASTA file (e.g., `G_californianus_813.fasta`), not the path to the file. The path to the file is specified in the `transfer_input_files` attribute. Our executable script will look for the FASTA file in the top-level working directory of the job, which is where HTCondor places the transferred input files.
 
-3. Submit your `minimap2_index.sub` job to the OSPool
+3. Submit your `minimap2_index.sub` job to the CHTC Pool.
     ```
     condor_submit minimap2_index.sub
     ```
@@ -237,13 +220,13 @@ To get ready for our mapping step, we need to prepare our freshly sequenced read
    
 ### Running Minimap to Map Reads to the Reference Genome
  
-Now that we have our reference genome indexed and our reads split into smaller chunks, we can proceed to map our reads to the reference genome using `minimap2`. We will submit a cluster of jobs to the OSPool, where each job will map one of the split FASTQ files to the reference genome in parallel.
+Now that we have our reference genome indexed and our reads split into smaller chunks, we can proceed to map our reads to the reference genome using `minimap2`. We will submit a cluster of jobs to the CHTC Pool, where each job will map one of the split FASTQ files to the reference genome in parallel.
 
 1.  Create `executables/minimap2_mapping.sh` using either `vim` or `nano`
 
     ```
     #!/bin/bash
-    # Use minimap2 to map the basecalled reads to the reference genome
+    # Use minimap2 to map the reads to the reference genome
     ./minimap2 -ax map-ont "$1" "$2" > "mapped_${2}_reads_to_genome.sam"
     
     # Use samtools to sort our mapped reads BAM, required for downstream analysis
@@ -280,7 +263,7 @@ Now that we have our reference genome indexed and our reads split into smaller c
    
      ```transfer_output_remaps = "<file_on_execution_point>=<desired_path_to_file_on_access_point>``` 
     
-3. Submit your cluster of minimap2 jobs to the OSPool
+3. Submit your cluster of minimap2 jobs to the CHTC Pool.
    
    ```
    condor_submit minimap2_mapping.sub
@@ -301,43 +284,43 @@ Now that you've completed the read mapping tutorial on CHTC, you're ready to ada
 
 📦 Create Your Own Containers
 * Extend the Apptainer containers used here with additional tools, reference data, or dependencies.
-* For help with this, see our [Containers Guide](https://portal.osg-htc.org/documentation/htc_workloads/using_software/containers/).
+* For help with this, see our [Containers Guide](https://chtc.cs.wisc.edu/uw-research-computing/software-overview-htc#main).
 
 🚀 Run Larger Analyses
 * Submit thousands of mapping jobs across the CHTC pool.
 * Explore data staging best practices using the OSDF for large-scale genomics workflows.
-* Consider using workflow managers (e.g., [DAGman](https://portal.osg-htc.org/documentation/htc_workloads/automated_workflows/dagman-workflows/)) with HTCondor.
+* Consider using workflow managers (e.g., [DAGman](https://chtc.cs.wisc.edu/uw-research-computing/htc/dagman-workflows#main)) with HTCondor.
 
 🧑‍💻 Get Help or Collaborate
-* Reach out to [support@osg-htc.org](mailto:support@osg-htc.org) for one-on-one help with scaling your research.
-* Attend office hours or training sessions—see the [OSPool Help Page](https://portal.osg-htc.org/documentation/support_and_training/support/getting-help-from-RCFs/) for details.
+* Reach out to [chtc@cs.wisc.edu](mailto:chtc@cs.wisc.edu) for one-on-one help with scaling your research.
+* Attend office hours or training sessions—see the [CHTC Get Help Page](https://chtc.cs.wisc.edu/uw-research-computing/get-help.html) for details.
 
 ### Software
 
 In this tutorial, we created several *starter* apptainer containers, including tools like: Dorado, SAMtools, Minimap, and Sniffles2. These containers can serve as a *jumping-off* for you if you need to install additional software for your workflows. 
 
 Our recommendation for most users is to use "Apptainer" containers for deploying their software.
-For instructions on how to build an Apptainer container, see our guide [Using Apptainer/Singularity Containers](https://portal.osg-htc.org/documentation/htc_workloads/using_software/containers-singularity/).
-If you are familiar with Docker, or want to learn how to use Docker, see our guide [Using Docker Containers](https://portal.osg-htc.org/documentation/htc_workloads/using_software/containers-docker/).
+For instructions on how to build an Apptainer container, see our guide [Using Apptainer/Singularity Containers](https://chtc.cs.wisc.edu/uw-research-computing/apptainer-htc#main).
+If you are familiar with Docker, or want to learn how to use Docker, see our guide [Using Docker Containers](https://chtc.cs.wisc.edu/uw-research-computing/docker-jobs#main).
 
-This information can also be found in our guide [Using Software on the Open Science Pool](https://portal.osg-htc.org/documentation/htc_workloads/using_software/software-overview/).
+This information can also be found in our guide [Using Software on CHTC](https://chtc.cs.wisc.edu/uw-research-computing/software-overview-htc#main).
 
 ### Data
 
 The ecosystem for moving data to, from, and within the HTC system can be complex, especially if trying to work with large data (> gigabytes).
-For guides on how data movement works on the HTC system, see our [Data Staging and Transfer to Jobs](https://portal.osg-htc.org/documentation/htc_workloads/managing_data/overview/) guides.
+For guides on how data movement works on the HTC system, see our [Data Staging and Transfer to Jobs](https://chtc.cs.wisc.edu/uw-research-computing/htc-job-file-transfer#main) guides.
 
 ### GPUs
 
-The OSPool has GPU nodes available for common use, like the ones used in this tutorial. If you would like to learn more about our GPU capacity, please visit our [GPU Guide on the OSPool Documentation Portal](https://portal.osg-htc.org/documentation/htc_workloads/specific_resource/gpu-jobs/).
+CHTC has GPU nodes available for common use, like the ones used in this tutorial. If you would like to learn more about our GPU capacity, please visit our [GPU Guide on the CHTC Documentation Portal](https://chtc.cs.wisc.edu/uw-research-computing/gpu-jobs#main).
 
 ## Getting Help
 
-The OSPool Research Computing Facilitators are here to help researchers using the OSPool for their research. We provide a broad swath of research facilitation services, including:
+The CHTC Research Computing Facilitators are here to help researchers using CHTC for their research. We provide a broad swath of research facilitation services, including:
 
-* **Web guides**: [OSPool Guides](https://portal.osg-htc.org/documentation/) - instructions and how-tos for using the OSPool and OSDF.
-* **Email support**: get help within 1-2 business days by emailing [support@osg-htc.org](mailto:support@osg-htc.org).
-* **Virtual office hours**: live discussions with facilitators - see the [Email, Office Hours, and 1-1 Meetings](https://portal.osg-htc.org/documentation/support_and_training/support/getting-help-from-RCFs/) page for current schedule.
-* **One-on-one meetings**: dedicated meetings to help new users, groups get started on the system; email [support@osg-htc.org](mailto:support@osg-htc.org) to request a meeting.
+* **Web guides**: [CHTC - HTC Cluster Guides](https://chtc.cs.wisc.edu/uw-research-computing/htc/guides.html) - instructions and how-tos for using the CHTC and OSDF.
+* **Email support**: get help within 1-2 business days by emailing [chtc@cs.wisc.edu](mailto:chtc@cs.wisc.edu).
+* **Virtual office hours**: live discussions with facilitators - see the [Email, Office Hours, and 1-1 Meetings](https://chtc.cs.wisc.edu/uw-research-computing/get-help.html) page for current schedule.
+* **One-on-one meetings**: dedicated meetings to help new users, groups get started on the system; email [chtc@cs.wisc.edu](mailto:chtc@cs.wisc.edu) to request a meeting.
 
-This information, and more, is provided in our [Get Help](https://portal.osg-htc.org/documentation/support_and_training/support/getting-help-from-RCFs/) page.
+This information, and more, is provided in our [Get Help](https://chtc.cs.wisc.edu/uw-research-computing/get-help.html) page.
