@@ -66,18 +66,20 @@ To obtain a copy of the files used in this tutorial, you can
 * Clone the repository, with 
   
   ```
-  git clone https://github.com/osg-htc/tutorial-long-read-genomics
+  git clone https://github.com/dmora127/CHTC-BioCafe-Fall25-Minimap2.git
   ```
 
   or the equivalent for your device
 
-* Download the toy dataset using the Pelican platform: 
+* Download the toy dataset and container from the `/staging/groups/chtc_staff/` directory: 
   
     ```
-    pelican object get pelican://osg-htc.org/ospool/uc-shared/public/osg-training/tutorial-ospool-genomics/data/path/to/pod5/files ./
+    cp /staging/groups/chtc_staff/sd_0001_sub.fastq.gz ~/genomics_tutorial/inputs/
+    cp /staging/groups/chtc_staff/G_californianus_813.fasta ~/genomics_tutorial/inputs/
+    cp /staging/groups/chtc_staff/minimap2_08OCT2025_v1.sif /staging/<NetID>/genomics_tutorial/software/
     ```
 
-<!--TODO: Generate simulated pod5 files from strain and upload to uc-shared directory-->
+<!--TODO: Add to pelican readable origin-->
 
 ## Setting up our software environment
 Before we can begin mapping our reads, we need to setup our software environment to run Dorado. We are going to setup our environment using an Apptainer container. 
@@ -100,6 +102,9 @@ text to a new file titled `minimap2.def`. You can open up a text editor, such as
     ```
 
     This definition file uses the latest Anaconda (formerly Continuumio) `Miniconda3` base image from Docker and conda installs `minimap2`, `samtools`, and `bedtools` from the `bioconda` and `conda-forge` channels.
+
+>[!TIP]
+> A pre-built minimap2 container is available in the `/staging/groups/chtc_staff/` directory. You can copy it to your `/staging/<NetID>/genomics_tutorial/software/` directory using the command: `cp /staging/groups/chtc_staff/minimap2_08OCT2025_v1.sif /staging/<NetID>/genomics_tutorial/software/`. If copying the pre-built container, you can skip steps 3-6 below.
 
 3. Next we need to write our interactive apptainer build job submission script. This submit file allows you to _build_ a container image interactively on a dedicated build node. Copy and paste this block of text to a new file titled `minimap2_build.sub`. You can open up a text editor, such as `vim` or `nano` using a command like: `vim minimap2_build.sub`. **Make sure to replace `<image.def>` with the path to your `minimap2.def` file you created in step 2.**
 
