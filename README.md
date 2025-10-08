@@ -72,7 +72,9 @@ To obtain a copy of the files used in this tutorial, you can
     cp /staging/groups/chtc_staff/minimap2_08OCT2025_v1.sif /staging/<NetID>/genomics_tutorial/software/
     ```
     or, if you want to copy all three files in parallel (faster! but less readable):
-    `(cp /staging/groups/chtc_staff/sd_0001_sub.fastq.gz ~/genomics_tutorial/inputs/ & cp /staging/groups/chtc_staff/G_californianus_813.fasta ~/genomics_tutorial/inputs/ & cp /staging/groups/chtc_staff/minimap2_08OCT2025_v1.sif /staging/damorales4/genomics_tutorial/software/ & wait)`
+    ```
+    (cp /staging/groups/chtc_staff/sd_0001_sub.fastq.gz ~/genomics_tutorial/inputs/ & cp /staging/groups/chtc_staff/G_californianus_813.fasta ~/genomics_tutorial/inputs/ & cp /staging/groups/chtc_staff/minimap2_08OCT2025_v1.sif /staging/damorales4/genomics_tutorial/software/ & wait)
+    ```
 
 <!--TODO: Add to pelican readable origin-->
 
