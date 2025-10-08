@@ -71,6 +71,18 @@ To obtain a copy of the files used in this tutorial, you can
 
   or the equivalent for your device
 
+* Set up the `/home` and `/staging` directories:
+
+  ```
+  mkdir -p ~/genomics_tutorial/
+  cd ~/genomics_tutorial/
+  cp -r ../CHTC-BioCafe-Fall25-Minimap2/genomics_tutorial/home/* ./
+  
+  mkdir -p /staging/<NetID>/genomics_tutorial/
+  cd /staging/<NetID>/genomics_tutorial//genomics_tutorial/
+  cp -r ../CHTC-BioCafe-Fall25-Minimap2/genomics_tutorial/staging/* ./
+  ```
+
 * Download the toy dataset and container from the `/staging/groups/chtc_staff/` directory: 
   
     ```
