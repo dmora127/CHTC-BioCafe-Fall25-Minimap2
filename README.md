@@ -75,12 +75,10 @@ To obtain a copy of the files used in this tutorial, you can
 
   ```
   mkdir -p ~/genomics_tutorial/
-  cd ~/genomics_tutorial/
-  cp -r ../CHTC-BioCafe-Fall25-Minimap2/genomics_tutorial/home/* ./
+  cp -r ~/CHTC-BioCafe-Fall25-Minimap2/genomics_tutorial/home/* ~/genomics_tutorial/
   
   mkdir -p /staging/<NetID>/genomics_tutorial/
-  cd /staging/<NetID>/genomics_tutorial//genomics_tutorial/
-  cp -r ../CHTC-BioCafe-Fall25-Minimap2/genomics_tutorial/staging/* ./
+  cp -r ~/CHTC-BioCafe-Fall25-Minimap2/genomics_tutorial/staging/* /staging/<NetID>/genomics_tutorial/
   ```
 
 * Download the toy dataset and container from the `/staging/groups/chtc_staff/` directory: 
