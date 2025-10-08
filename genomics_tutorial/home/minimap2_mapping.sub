@@ -3,7 +3,7 @@ container_image        = osdf:///chtc/staging/<NetID>/genomics_tutorial/software
 executable             = ./executables/minimap2_mapping.sh
 arguments              = <ref_genome_mmi_file_name> $(READ_SUBSET)
 
-transfer_input_files   = "osdf:///chtc/staging/<NetID>/genomics_tutorial/inputs/<ref_genome_mmi_file_name>", inputs/$(READ_SUBSET)
+transfer_input_files   = osdf:///chtc/staging/<NetID>/genomics_tutorial/inputs/<ref_genome_mmi_file_name>, inputs/$(READ_SUBSET)
 
 transfer_output_files  = mapped_$(READ_SUBSET)_reads_to_genome_sam_sorted.bam
 transfer_output_remaps = "mapped_$(READ_SUBSET)_reads_to_genome_sam_sorted.bam = outputs/mapped_$(READ_SUBSET)_reads_to_genome_sam_sorted.bam"
